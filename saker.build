@@ -100,8 +100,8 @@ upload(){
 	include(Path: secret/secrets.build)
 	nest.server.upload(
 		Bundles: $export[bundlepaths],
-		APIKey: global(sipka.apiextract.UPLOAD_API_KEY),
-		APISecret: global(sipka.apiextract.UPLOAD_API_SECRET),
+		APIKey: global(saker.apiextract.UPLOAD_API_KEY),
+		APISecret: global(saker.apiextract.UPLOAD_API_SECRET),
 		Overwrite: true,
 	)
 }
