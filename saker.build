@@ -1,0 +1,107 @@
+global(VERSION_saker.apiextract) = "0.8.0"
+
+compile(
+	out apicompile,
+	out processorcompile,
+){
+	$apicompile = saker.java.compile(
+		SourceDirectories: api/src/,
+		Identifier: api,
+	)
+	$processorcompile = saker.java.compile(
+		SourceDirectories: processor/src/,
+		ClassPath: [
+			$apicompile,
+			saker.java.classpath.bundle(nest.dependency.resolve(
+				Bundles: saker.build-api,
+				Filters: nest.dependency.filter.compile(CompileTransitive: false),
+			)),
+		],
+		Identifier: processor,
+	)
+}
+export(
+	out jar,
+	out apijar,
+	out sourcejar,
+	
+	out bundlepaths = [
+		$jar[Path],
+		$apijar[Path],
+		$sourcejar[Path],
+	]
+) {
+	$compile = include(compile)
+	$apicompile = $compile[apicompile]
+	$processorcompile = $compile[processorcompile]
+	
+	$jar = saker.jar.create(
+		Output: saker.apiextract-processor.jar,
+		Resources: [
+			{
+				Directory: $processorcompile[ClassDirectory],
+				Resources: **,
+			},
+			{
+				Directory: processor/resources/,
+				Resources: **,
+			},
+		],
+		Manifest: {
+			MainAttributes: {
+				Nest-Bundle-Format-Version: 1,
+				Nest-Bundle-Identifier: "saker.apiextract-processor-v{ global(VERSION_saker.apiextract) }",
+				Nest-Bundle-Source: "saker.apiextract-sources-v{ global(VERSION_saker.apiextract) }",
+			},
+		},
+	)
+	$apijar = saker.jar.create(
+		Output: saker.apiextract-api.jar,
+		Resources: [
+			{
+				Directory: $apicompile[ClassDirectory],
+				Resources: **,
+			},
+			{
+				Directory: api/resources/,
+				Resources: **,
+			},
+		],
+		Manifest: {
+			MainAttributes: {
+				Nest-Bundle-Format-Version: 1,
+				Nest-Bundle-Identifier: "saker.apiextract-api-v{ global(VERSION_saker.apiextract) }",
+				Nest-Bundle-Source: "saker.apiextract-sources-v{ global(VERSION_saker.apiextract) }",
+			},
+		},
+	)
+	$sourcejar = saker.jar.create(
+		Output: saker.apiextract-sources.jar,
+		Resources: [
+			{
+				Directory: [processor/src/, api/src/],
+				Resources: **/*.java,
+			},
+		],
+		Manifest: {
+			MainAttributes: {
+				Nest-Bundle-Format-Version: 1,
+				Nest-Bundle-Identifier: "saker.apiextract-sources-v{ global(VERSION_saker.apiextract) }",
+			},
+		},
+	)
+}
+install(){
+	$export = include(export)
+	nest.local.install(Bundle: $export[bundlepaths])
+}
+upload(){
+	$export = include(export, Path: saker.build)
+	include(Path: secret/secrets.build)
+	nest.server.upload(
+		Bundles: $export[bundlepaths],
+		APIKey: global(sipka.apiextract.UPLOAD_API_KEY),
+		APISecret: global(sipka.apiextract.UPLOAD_API_SECRET),
+		Overwrite: true,
+	)
+}

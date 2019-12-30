@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<saker.build.ideconfigs xmlns:s="saker://serialization/types">
+    <ide-configurations>
+        <s:array>
+            <s:obj>
+                <type>saker.java.compile.ide.configuration</type>
+                <identifier>api</identifier>
+                <fields>
+                    <Sjava.compiler.install.location>c:/Program Files/Java/jdk1.8.0_221</Sjava.compiler.install.location>
+                    <Sjava.compiler.java.version>1.8.0_221</Sjava.compiler.java.version>
+                    <Sjava.output.directory.bin>wd:/build/saker.java.compile/api/bin</Sjava.output.directory.bin>
+                    <Ajava.source.directories>
+                        <s:array>
+                            <s:obj>
+                                <Spath>wd:/api/src</Spath>
+                            </s:obj>
+                        </s:array>
+                    </Ajava.source.directories>
+                </fields>
+            </s:obj>
+            <s:obj>
+                <type>saker.java.compile.ide.configuration</type>
+                <identifier>processor</identifier>
+                <fields>
+                    <Ajava.classpaths>
+                        <s:array>
+                            <s:obj>
+                                <Spath>wd:/build/saker.java.compile/api/bin</Spath>
+                                <Asourcedirectories>
+                                    <s:array>
+                                        <s:obj>
+                                            <Spath>wd:/api/src</Spath>
+                                        </s:obj>
+                                    </s:array>
+                                </Asourcedirectories>
+                            </s:obj>
+                            <s:obj>
+                                <Spath.local>c:/Users/sipka/.saker/repository/storage/jar/6e95a0e093a20916a009c0347d2709d9/local/bundles/saker.build/v0.8.0/saker.build-api-v0.8.0.jar</Spath.local>
+                                <Ssourcepath.local>c:/Users/sipka/.saker/repository/storage/jar/6e95a0e093a20916a009c0347d2709d9/local/bundles/saker.build/v0.8.0/saker.build-sources-v0.8.0.jar</Ssourcepath.local>
+                            </s:obj>
+                        </s:array>
+                    </Ajava.classpaths>
+                    <Sjava.compiler.install.location>c:/Program Files/Java/jdk1.8.0_221</Sjava.compiler.install.location>
+                    <Sjava.compiler.java.version>1.8.0_221</Sjava.compiler.java.version>
+                    <Sjava.output.directory.bin>wd:/build/saker.java.compile/processor/bin</Sjava.output.directory.bin>
+                    <Ajava.source.directories>
+                        <s:array>
+                            <s:obj>
+                                <Spath>wd:/processor/src</Spath>
+                            </s:obj>
+                        </s:array>
+                    </Ajava.source.directories>
+                </fields>
+            </s:obj>
+        </s:array>
+    </ide-configurations>
+</saker.build.ideconfigs>
