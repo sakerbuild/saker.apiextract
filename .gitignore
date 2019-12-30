@@ -5,3 +5,4 @@
 /.saker.project.lock
 secret/**
 !secret/readme.md
+/.saker.build.ideconfigs
