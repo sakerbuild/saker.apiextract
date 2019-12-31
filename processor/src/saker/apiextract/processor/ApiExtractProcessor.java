@@ -1295,11 +1295,21 @@ public class ApiExtractProcessor implements Processor {
 		String formalname = tpelem.getSimpleName().toString();
 		List<? extends TypeMirror> formalbounds = tpelem.getBounds();
 		writer.visitFormalTypeParameter(formalname);
+
 		Iterator<? extends TypeMirror> it = formalbounds.iterator();
 		if (it.hasNext()) {
-			TypeMirror firstbound = it.next();
-			SignatureVisitor firstwriter = writer.visitClassBound();
-			appendSignature(firstbound, firstwriter);
+			//only add the first bound as the class bound if it is an interface
+			{
+				TypeMirror firstbound = it.next();
+				TypeKind firstkind = firstbound.getKind();
+				SignatureVisitor firstwriter;
+				if (firstkind == TypeKind.DECLARED && ((DeclaredType) firstbound).asElement().getKind().isClass()) {
+					firstwriter = writer.visitClassBound();
+				} else {
+					firstwriter = writer.visitInterfaceBound();
+				}
+				appendSignature(firstbound, firstwriter);
+			}
 			while (it.hasNext()) {
 				TypeMirror bound = it.next();
 				SignatureVisitor itfwriter = writer.visitInterfaceBound();
@@ -1380,6 +1390,9 @@ public class ApiExtractProcessor implements Processor {
 		SignatureVisitor returnwriter = writer.visitReturnType();
 		appendSignature(ee.getReturnType(), returnwriter);
 		for (TypeMirror throwtm : ee.getThrownTypes()) {
+			if (throwtm.getKind() != TypeKind.TYPEVAR) {
+				continue;
+			}
 			SignatureVisitor throwwriter = writer.visitExceptionType();
 			appendSignature(throwtm, throwwriter);
 		}
