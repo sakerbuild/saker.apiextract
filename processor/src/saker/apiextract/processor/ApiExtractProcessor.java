@@ -56,6 +56,9 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileManager.Location;
 import javax.tools.StandardLocation;
 
+import saker.apiextract.api.DefaultableBoolean;
+import saker.apiextract.api.ExcludeApi;
+import saker.apiextract.api.PublicApi;
 import saker.build.thirdparty.org.objectweb.asm.AnnotationVisitor;
 import saker.build.thirdparty.org.objectweb.asm.ClassVisitor;
 import saker.build.thirdparty.org.objectweb.asm.ClassWriter;
@@ -65,10 +68,6 @@ import saker.build.thirdparty.org.objectweb.asm.Opcodes;
 import saker.build.thirdparty.org.objectweb.asm.Type;
 import saker.build.thirdparty.org.objectweb.asm.signature.SignatureVisitor;
 import saker.build.thirdparty.org.objectweb.asm.signature.SignatureWriter;
-
-import saker.apiextract.api.DefaultableBoolean;
-import saker.apiextract.api.ExcludeApi;
-import saker.apiextract.api.PublicApi;
 
 public class ApiExtractProcessor implements Processor {
 	public static final String OPTION_BASE_PACKAGES = "saker.apiextract.base_packages";
@@ -866,7 +865,8 @@ public class ApiExtractProcessor implements Processor {
 	}
 
 	private String getSuperClassInternalName(TypeElement type) {
-		if (type.getKind() == ElementKind.INTERFACE) {
+		ElementKind typekind = type.getKind();
+		if (typekind == ElementKind.INTERFACE || typekind == ElementKind.ANNOTATION_TYPE) {
 			return "java/lang/Object";
 		}
 		TypeMirror supertm = type.getSuperclass();
@@ -1303,7 +1303,8 @@ public class ApiExtractProcessor implements Processor {
 				TypeMirror firstbound = it.next();
 				TypeKind firstkind = firstbound.getKind();
 				SignatureVisitor firstwriter;
-				if (firstkind == TypeKind.DECLARED && ((DeclaredType) firstbound).asElement().getKind().isClass()) {
+				if ((firstkind == TypeKind.DECLARED && ((DeclaredType) firstbound).asElement().getKind().isClass())
+						|| firstkind == TypeKind.TYPEVAR) {
 					firstwriter = writer.visitClassBound();
 				} else {
 					firstwriter = writer.visitInterfaceBound();
