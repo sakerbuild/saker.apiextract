@@ -16,4 +16,8 @@ java -jar path/to/saker.build.jar -bd build compile saker.build
 
 ## License
 
-TBD TODO
+Different parts of the source code for the project is licensed under different terms. The API is licensed under *Apache License 2.0* ( [`Apache-2.0`](https://spdx.org/licenses/Apache-2.0.html)), while the annotation processor related codes are licensed under *GNU General Public License v3.0 only* ([`GPL-3.0-only`](https://spdx.org/licenses/GPL-3.0-only.html)). See the LICENSE files under the `api` and `processor` directories.
+
+This is in order to allow more convenient usage of the library. 
+
+Official releases of the project (and parts of it) may be licensed under different terms. See the particular releases for more information.
