@@ -46,6 +46,10 @@ export(
 				Directory: processor/resources/,
 				Resources: **,
 			},
+			{
+				Files: processor/LICENSE,
+				TargetDirectory: META-INF,
+			},
 		],
 		Manifest: {
 			MainAttributes: {
@@ -66,6 +70,10 @@ export(
 				Directory: api/resources/,
 				Resources: **,
 			},
+			{
+				Files: api/LICENSE,
+				TargetDirectory: META-INF,
+			},
 		],
 		Manifest: {
 			MainAttributes: {
@@ -81,6 +89,10 @@ export(
 			{
 				Directory: [processor/src/, api/src/],
 				Resources: **/*.java,
+			},
+			{
+				Files: processor/LICENSE,
+				TargetDirectory: META-INF,
 			},
 		],
 		Manifest: {
