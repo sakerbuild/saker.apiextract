@@ -1,0 +1,11 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    curl -s https://api.nest.saker.build/bundle/download/saker.build-v0.8.0 -o saker.build.jar
+    java -jar saker.build.jar -bd build export
+  displayName: 'Export library JAR'

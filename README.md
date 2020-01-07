@@ -1,5 +1,7 @@
 # saker.apiextract
 
+![Build status](https://img.shields.io/azure-devops/build/sakerbuild/56ddae8e-b228-4ce7-a0d6-ec211126205d/1/master)
+
 Java annotation processor for extracting API bytecode from source code. The project implements an annotation processor that examines the compiled classes and generate stub class files that contain only the declared public API fields, methods, and classes.
 
 The processor can be used to extract a distribution that can be used to compile other applications against. It is also useful to track the changes between different releases of a single project. The processor can be also configurad to issue a warning if there's a public source element that doesn't have an associated JavaDoc.
