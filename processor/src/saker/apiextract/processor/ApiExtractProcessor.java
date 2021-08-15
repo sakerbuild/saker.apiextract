@@ -40,6 +40,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -765,13 +766,15 @@ public class ApiExtractProcessor implements Processor {
 									MethodVisitor mw = cw.visitMethod(getMethodModifierAccessOpcode(type, ee), mname,
 											getDescriptor(ee, implicitparameters),
 											getGenericSignature(ee, implicitparameters), exceptions);
-									AnnotationValue defval = ee.getDefaultValue();
-									if (defval != null) {
-										visitMethodAnnotationDefaultValue(ee, mw, defval);
-									}
 									for (VariableElement pe : ee.getParameters()) {
 										mw.visitParameter(pe.getSimpleName().toString(),
 												getParameterModifierAccessOpcode(type, ee, pe));
+									}
+									visitMethodAnnotations(ee, mw);
+
+									AnnotationValue defval = ee.getDefaultValue();
+									if (defval != null) {
+										visitMethodAnnotationDefaultValue(ee, mw, defval);
 									}
 									Set<Modifier> emods = ee.getModifiers();
 									if (!emods.contains(Modifier.ABSTRACT)) {
@@ -793,6 +796,7 @@ public class ApiExtractProcessor implements Processor {
 									VariableElement ve = (VariableElement) enclosed;
 									FieldVisitor fw = cw.visitField(getFieldModifierAccessOpcode(type, ve),
 											ve.getSimpleName().toString(), "L" + internalname + ";", null, null);
+									visitFieldAnnotations(ve, fw);
 									fw.visitEnd();
 									break;
 								}
@@ -818,6 +822,7 @@ public class ApiExtractProcessor implements Processor {
 									FieldVisitor fw = cw.visitField(modifiers, ve.getSimpleName().toString(),
 											getDescriptor(ve.asType()), fieldsignature,
 											toConstantValueWithType(fieldvalue, ve.asType()));
+									visitFieldAnnotations(ve, fw);
 									fw.visitEnd();
 									break;
 								}
@@ -844,20 +849,71 @@ public class ApiExtractProcessor implements Processor {
 		}
 	}
 
-	private void visitClassAnnotations(Element pubelem, ClassVisitor cw) {
+	private static RetentionPolicy getAnnotationRetentionPolicy(TypeElement annotationelement) {
+		Retention retention = annotationelement.getAnnotation(Retention.class);
+		RetentionPolicy retpolicy = retention == null ? RetentionPolicy.CLASS : retention.value();
+		return retpolicy;
+	}
+
+	private void visitClassAnnotations(AnnotatedConstruct pubelem, ClassVisitor visitor) {
 		for (AnnotationMirror am : pubelem.getAnnotationMirrors()) {
 			DeclaredType amtype = am.getAnnotationType();
 			if (amtype == null) {
 				continue;
 			}
 			TypeElement amelem = (TypeElement) amtype.asElement();
-			Retention retention = amelem.getAnnotation(Retention.class);
-			RetentionPolicy retpolicy = retention == null ? RetentionPolicy.CLASS : retention.value();
+			RetentionPolicy retpolicy = getAnnotationRetentionPolicy(amelem);
 			if (retpolicy == RetentionPolicy.SOURCE) {
 				continue;
 			}
 			boolean visible = retpolicy == RetentionPolicy.RUNTIME;
-			AnnotationVisitor av = cw.visitAnnotation(getDescriptor(amelem.asType()), visible);
+			AnnotationVisitor av = visitor.visitAnnotation(getDescriptor(amelem.asType()), visible);
+			if (av != null) {
+				for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : am.getElementValues()
+						.entrySet()) {
+					visitAnnotationVisitor(entry.getKey(), av, entry.getValue());
+				}
+				av.visitEnd();
+			}
+		}
+	}
+
+	private void visitFieldAnnotations(AnnotatedConstruct pubelem, FieldVisitor visitor) {
+		for (AnnotationMirror am : pubelem.getAnnotationMirrors()) {
+			DeclaredType amtype = am.getAnnotationType();
+			if (amtype == null) {
+				continue;
+			}
+			TypeElement amelem = (TypeElement) amtype.asElement();
+			RetentionPolicy retpolicy = getAnnotationRetentionPolicy(amelem);
+			if (retpolicy == RetentionPolicy.SOURCE) {
+				continue;
+			}
+			boolean visible = retpolicy == RetentionPolicy.RUNTIME;
+			AnnotationVisitor av = visitor.visitAnnotation(getDescriptor(amelem.asType()), visible);
+			if (av != null) {
+				for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : am.getElementValues()
+						.entrySet()) {
+					visitAnnotationVisitor(entry.getKey(), av, entry.getValue());
+				}
+				av.visitEnd();
+			}
+		}
+	}
+
+	private void visitMethodAnnotations(AnnotatedConstruct pubelem, MethodVisitor visitor) {
+		for (AnnotationMirror am : pubelem.getAnnotationMirrors()) {
+			DeclaredType amtype = am.getAnnotationType();
+			if (amtype == null) {
+				continue;
+			}
+			TypeElement amelem = (TypeElement) amtype.asElement();
+			RetentionPolicy retpolicy = getAnnotationRetentionPolicy(amelem);
+			if (retpolicy == RetentionPolicy.SOURCE) {
+				continue;
+			}
+			boolean visible = retpolicy == RetentionPolicy.RUNTIME;
+			AnnotationVisitor av = visitor.visitAnnotation(getDescriptor(amelem.asType()), visible);
 			if (av != null) {
 				for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : am.getElementValues()
 						.entrySet()) {
