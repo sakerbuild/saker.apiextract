@@ -1,6 +1,6 @@
 # saker.apiextract
 
-![Build status](https://img.shields.io/azure-devops/build/sakerbuild/56ddae8e-b228-4ce7-a0d6-ec211126205d/17/master) [![Latest version](https://mirror.nest.saker.build/badges/saker.apiextract/version.svg)](https://nest.saker.build/package/saker.apiextract "saker.apiextract | saker.nest")
+[![Build status](https://img.shields.io/azure-devops/build/sakerbuild/56ddae8e-b228-4ce7-a0d6-ec211126205d/17/master)](https://dev.azure.com/sakerbuild/saker.apiextract/_build) [![Latest version](https://mirror.nest.saker.build/badges/saker.apiextract/version.svg)](https://nest.saker.build/package/saker.apiextract "saker.apiextract | saker.nest")
 
 Java annotation processor for extracting API bytecode from source code. The project implements an annotation processor that examines the compiled classes and generate stub class files that contain only the declared public API fields, methods, and classes.
 
